@@ -40,5 +40,4 @@ vignettes/*.pdf
 
 # Others
 dataset/
-settings.py
 __pycache__
