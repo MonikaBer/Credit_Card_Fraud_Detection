@@ -3,7 +3,7 @@ Binary classification based on highly unbalanced dataset.
 
 # Usage
 
-- download data from [Kaggle](https://www.kaggle.com/mlg-ulb/creditcardfraud?select=creditcard.csv)
+- download data from [Kaggle](https://www.kaggle.com/mlg-ulb/creditcardfraud?select=creditcard.csv) (Credit Card Fraud Detection)
 
 - prepare dataset:
 ```
