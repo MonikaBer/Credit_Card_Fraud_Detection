@@ -201,8 +201,6 @@ def main():
         correlations_list.append(value)
         attributes_list.append(attr)
 
-    # correlations_list = mutual_infos.iloc[:,0:].values
-    # attributes_list = mutual_infos.iloc[:,1:].values
     print(correlations_list)
     print()
     print(attributes_list)
