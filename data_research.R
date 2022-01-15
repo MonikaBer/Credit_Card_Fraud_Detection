@@ -1,5 +1,3 @@
-#install.packages("caret")
-#install.packages("ellipse")
 library("caret")
 library("ellipse")
 
@@ -8,6 +6,16 @@ dataset <- read.csv('dataset/creditcard.csv',
                  header = TRUE, fill = TRUE, encoding = 'UTF-8')
 dataset$Class <- as.factor(dataset$Class)
 #dataset
+
+tmp <- dataset[dataset$Class == 0, ]
+tmp2 <- tmp[sample(nrow(tmp), 99508), ]
+
+
+dataset <- rbind(dataset[dataset$Class == 1, ], tmp2)
+print("\nClass distribution: ")
+percentage <- prop.table(table(dataset$Class)) * 100
+cbind(freq = table(dataset$Class), percentage = percentage)
+#print(tmp)
 
 # #print(paste0("Data dimensions: ", dim(data)[0]))
 # print("\nDataset dimensions: ")
