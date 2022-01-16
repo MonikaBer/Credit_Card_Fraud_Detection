@@ -2,12 +2,11 @@ library(randomForest)
 library(caret)
 library(dplyr)
 library(modEvA)
-# library(MLmetrics)
-
+library(PRROC)
 
 dataset = read.csv('dataset/creditcard.csv')
-# dataset <- dataset[, c(11,12,13,15,17,18,31)]
-dataset <- dataset[, c(11,12,31)]
+dataset <- dataset[, c(11,12,13,15,17,18,31)]
+# dataset <- dataset[, c(11,12,31)]
 #dataset
 
 # resampling
@@ -28,31 +27,74 @@ test_index <- createDataPartition(dataset$Class, p = 0.80, list = FALSE)
 test <- dataset[-test_index,]
 dataset <- dataset[test_index,]
 
-control <- trainControl(method = "cv", number = 10)
-metric <- "Accuracy"
+#mtry = sqrt(6)
+grid_set <- expand.grid(.mtry = 6)
 
-set.seed(7)
-fit.rf <- train(Class ~ ., data = dataset, method = "rf", metric = metric, trControl = control)
-# print(fit.rf)
-# summary(fit.rf)
+control <- trainControl(method = "repeatedcv", number = 5, repeats = 3, search = 'grid',
+                        savePredictions = TRUE,
+                        summaryFunction = twoClassSummary)
 
-predictions <- predict(fit.rf, test)
-confMatrix <- confusionMatrix(predictions, testn$Class)
+modelsList <- list()
 
-print('Confusion matrix: ')
-confMatrix
+for (ntree in seq(from = 100, to = 500, by = 100)) {
+    set.seed(1000)
+    fit <- train(Class ~ ., data = dataset, method = "rf", metric = 'Sens',
+                ntree = ntree, sampsize = c('0' = 5, '1' = 1000),
+                trControl = control, tuneGrid = grid_set)
+    key <- toString(ntree)
+    modelsList[[key]] <- fit
+}
 
-print('Recall:')
-rec = recall(predictions, test$Class)
-rec
+print('TRAINING END')
 
-print('Precision:')
-prec = precision(predictions, test$Class)
-prec
+#Compare results
+results <- resamples(modelsList)
+summary(results)
 
-print('F1:')
-f1 = (2 * prec * rec) / (prec + rec)
-f1
+print('Check models')
 
-print('PRAUC:')
-AUC(obs = as.integer(validation$Class), pred = as.integer(predictions), curve = 'PR', simplif = TRUE)
+i = 0
+for (model in modelsList) {
+    i <- i + 1
+    a <- paste('model ', toString(i), ':', sep = "", collapse = NULL)
+    print(a)
+
+    predictions <- predict(model, test)
+    confMatrix <- confusionMatrix(predictions, test$Class)
+
+    print('Confusion matrix: ')
+    print(confMatrix)
+
+    print('Recall:')
+    rec = recall(predictions, test$Class)
+    print(rec)
+
+    print('Precision:')
+    prec = precision(predictions, test$Class)
+    print(prec)
+
+    print('F1:')
+    f1 = (2 * prec * rec) / (prec + rec)
+    print(f1)
+
+    fg <- predictions[test$Class == 1]
+    bg <- predictions[test$Class == 0]
+
+    # ROC Curve and ROC AUC
+    roc <- roc.curve(scores.class0 = fg, scores.class1 = bg, curve = T)
+    name <- paste('roc_plot_', toString(i), '.jpg', sep = "", collapse = NULL)
+    jpeg(name)
+    plot(roc)
+    dev.off()
+
+    # PR Curve and PR AUC
+    pr <- pr.curve(scores.class0 = fg, scores.class1 = bg, curve = T)
+    name <- paste('pr_plot_', toString(i), '.jpg', sep = "", collapse = NULL)
+    jpeg(name)
+    plot(pr)
+    dev.off()
+
+    plot(model)
+    print(model)
+    summary(model)
+}
