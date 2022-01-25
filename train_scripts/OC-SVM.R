@@ -64,8 +64,14 @@ y <- dataset$Class #make y variable(dependent)
 #experiment6
 #model <- svm(x, y,type='one-classification', kernel="radial", nu =0.5, gamma= (2 / ncol(x)))  #train an one-classification model
 
-#experiment
-model <- svm(x, y,type='one-classification', kernel="radial", nu =0.5, gamma= (0.5 / ncol(x)))  #train an one-classification model
+#experiment7
+#model <- svm(x, y,type='one-classification', kernel="radial", nu =0.5, gamma= (0.5 / ncol(x)))  #train an one-classification model
+
+#experiment8
+model <- svm(x, y,type='one-classification', kernel="radial", nu =0.5, gamma= (1 / ncol(x)), cost=10)  #train an one-classification model
+
+#experiment9
+model <- svm(x, y,type='one-classification', kernel="radial", nu =0.5, gamma= (1 / ncol(x)), cost=0.1)  #train an one-classification model
 
 
 print(model)
