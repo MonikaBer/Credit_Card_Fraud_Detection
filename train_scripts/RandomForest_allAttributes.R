@@ -5,8 +5,8 @@ library(modEvA)
 library(PRROC)
 
 dataset = read.csv('dataset/creditcard.csv')
-dataset <- dataset[, c(10,11,12,14,16,17,31)]       #selected attributes
-# dataset
+dataset <- dataset[, c(1:31)]                      #all attributes
+#dataset
 
 # resampling
 d0 <- dataset[dataset$Class == 0,]
@@ -26,13 +26,14 @@ test_index <- createDataPartition(dataset$Class, p = 0.80, list = FALSE)
 test <- dataset[-test_index,]
 dataset <- dataset[test_index,]
 
-dataset[-7] = scale(dataset[-7])    #for selected attributes
-test[-7] = scale(test[-7])          #for selected attributes
+#normalization
+dataset[-31] = scale(dataset[-31])    #all attributes
+test[-31] = scale(test[-31])          #all attributes
 # head(dataset)
 # head(test)
 
 
-grid_set <- expand.grid(.mtry = 2)    #for selected attributes  (mtry set)
+grid_set <- expand.grid(.mtry = 5)    #all attributes   (mtry set)
 
 #5-fold CV
 control <- trainControl(method = "cv", number = 5, search = 'grid',
@@ -43,8 +44,8 @@ modelsList <- list()
 
 #ntree set
 for (ntree in c(1, 50, 100, 200, 500, 1000)) {
-    set.seed(1000)    #const seed
-    #train model with ntree and sampsize
+    set.seed(1000)      #const seed
+    #train model with sampsize and ntree
     fit <- train(Class ~ .,
                 data = dataset,
                 method = "rf",
@@ -96,14 +97,14 @@ for (model in modelsList) {
 
     # ROC Curve and ROC AUC
     roc <- roc.curve(scores.class0 = fg, scores.class1 = bg, curve = T)
-    name <- paste('roc_plot_', toString(i), '.jpg', sep = "", collapse = NULL)
+    name <- paste('RF_all_roc_plot_', toString(i), '.jpg', sep = "", collapse = NULL)
     jpeg(name)
     plot(roc)
     dev.off()
 
     # PR Curve and PR AUC
     pr <- pr.curve(scores.class0 = fg, scores.class1 = bg, curve = T)
-    name <- paste('pr_plot_', toString(i), '.jpg', sep = "", collapse = NULL)
+    name <- paste('RF_all_pr_plot_', toString(i), '.jpg', sep = "", collapse = NULL)
     jpeg(name)
     plot(pr)
     dev.off()

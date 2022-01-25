@@ -3,16 +3,23 @@ Binary classification based on highly unbalanced dataset.
 
 # Usage
 
-- download data from [Kaggle](https://www.kaggle.com/mlg-ulb/creditcardfraud?select=creditcard.csv) (Credit Card Fraud Detection) 
+- download data from [Kaggle](https://www.kaggle.com/mlg-ulb/creditcardfraud?select=creditcard.csv) (Credit Card Fraud Detection)
 
 - prepare dataset:
 ```
-python prepare_dataset.py --path <path_to_dataset_file>
+Rscript data_research.R
 ```
 
 - do reasearch:
 ```
-
+Rscript train_scripts/IsolationForest_allAtributes.R
+Rscript train_scripts/IsolationForest.R
+Rscript train_scripts/OC-SVM_allAtributes.R
+Rscript train_scripts/OC-SVM.R
+Rscript train_scripts/RandomForest_allAtributes.R
+Rscript train_scripts/RandomForest.R
+Rscript train_scripts/SVM_allAtributes.R
+Rscript train_scripts/SVM.R
 ```
 
 ## Documentation
